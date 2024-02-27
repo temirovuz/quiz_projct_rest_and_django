@@ -1,1 +1,6 @@
-# quiz-p16
+# quiz project
+
+Django and Rest 
+
+Filter
+
