@@ -1,0 +1,47 @@
+name: Quiz project
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  first:
+    name: Install ubuntu
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:15
+        env:
+          POSTGRES_USER: quiz
+          POSTGRES_PASSWORD: QuizProject123
+          POSTGRES_DB: quizdb
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Update
+        run: sudo apt update
+      - name: check out repo
+        uses: actions/checkout@v3
+      - name: Install python3-pip
+        run: sudo apt install python3-pip
+      - name: Requirements install
+        run: pip install -r requirements.txt
+      - name: Run test
+        env:
+          DJANGO_SETTINGS_MODULE: QuizProject.settings.local
+          SECRET_KEY: django-insecure-%r7j$wr1#-hwcfk^m81es@uw5xz@wfd-_s&ee5p)s$vl7iv54=
+          SQL_ENGINE: django.db.backends.postgresql
+          SQL_DATABASE: quizdb
+          SQL_USER: quiz
+          SQL_PASSWORD: QuizProject123
+          SQL_HOST: localhost
+          SQL_PORT: 5432
+        run: |
+          python manage.py migrate
+          python manage.py test
+
+
